@@ -11,16 +11,15 @@ TOP=0
 client = arDrone.createClient()
 client.config('video:video_channel', TOP);
 client.config('general:navdata_demo', 'FALSE');
-client.config('detect:enemy_colors', '3');
+client.config('detect:enemy_colors', '3');	// Use the colour detection
 client.config('detect:detect_type', '10');
 client.config('detect:detections_select_h', '1');
 client.config('control:altitude_max', '2000');
 
 navdata = arDrone.createUdpNavdataStream()
 
-
-
-var net=require('net');
+// Kill the drone via a tcp client connection
+var net = require('net');
 var s = net.createServer(function(c) {
 	c.on('data', function(data) {
 		if (data == 'stop') {
@@ -66,33 +65,61 @@ client.after(1000, function () {
 	client.stop();
 });
 
+var distance = {
+		perfect: true
+	, tooFar: true
+	, tooClose: true
+}
+
 var found = false;
+var state = {
+		found: false 		// has the drone found the colours
+	,	distance: distance.perfect
+
+} //'searching'
 
 client.after(2000, function() {
 	client.on('navdata', function(data) {
 		try {
-			if (data.demo.batteryPercentage < 20) {
-				console.log('Battery: ' + data.demo.batteryPercentage);
-			}
+			// Log when battery getting low
+			if (data.demo.batteryPercentage < 20) console.log('Battery: ' + data.demo.batteryPercentage);
 
 		    //console.log('Alt: ' + data.demo.altitude);
 		    //console.log(data.visionDetect);
 
 			if (data.visionDetect.nbDetected > 0) {
-
-				client.stop();
+				if (!state.found) {
+					client.stop()
+					state.found = true
+				}
 
 				vd = data.visionDetect
 				console.log('distance', vd.dist);
 
-				if (vd.dist[0] > 100) {
+				// state.distance
+				if (vd.dist[0] > 100 && state.distance !== distance.tooFar) {
+					// Check if the current distance state is !tooFar
+					client.stop()
 					console.log('forwards' + vd.dist[0])
+					state.distance === distance.tooFar
 					client.front(0.2);
-				} else if (vd.dist[0] < 100)  {
+
+				} else if (vd.dist[0] < 100 && state.distance !== distance.tooClose)  {
+					//  check if the distance state is !tooClose
+					client.stop()
 					console.log('back')
+					state.distance === distance.tooClose
 					client.back(0.2);
-				} else {
-					console.log('nothing to do...')
+				} else if (state.distance !== 'perfect') {
+					// check if the distance state is !perfect
+					client.stop();
+					state.distance = 'perfect'
+					console.log('perfect distance so, do nothing')
+				} 
+				else {
+					// if none of the above, then set to perfect
+					state.distance === distance.perfect
+					client.stop()
 				}
 
 				if (vd.yc > 550) {
@@ -112,18 +139,26 @@ client.after(2000, function() {
 				}
 				
 			} else {
-				// look around for one
-				console.log('none found')
-				client.clockwise(.7);
+				if (state.found) {
+					// Stop following and start searching
+					state.found = false;
+					console.log(state)
+					client.stop()
+				}
+				
+				client.clockwise(0.7);
 			}
-		} catch (error) {}
+		} catch (error) {
+
+		}
 
 	});
 });
+
+// land the drone when killing the program (Ctrl+C)
 process.on('SIGINT', function () {
-	client && client.land();
+	client.stop() && client.land();
 	setTimeout(function () {
 		process.exit(0);
 	}, 1000)
 });
-//client.land();
