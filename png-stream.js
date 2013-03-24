@@ -71,6 +71,16 @@ var DISTANCE = {
   , TOO_CLOSE: 2
 }
 
+var SPEED = {
+    FRONT: 0.2
+  , BACK: 0.2
+  , UP: 0.2
+  , DOWN: 0.2
+  , RIGHT: 0.2
+  , LEFT: 0.2
+  , ROTATE: 0.7
+}
+
 var found = false;
 var state = {
     found: false    // has the drone found the colours
@@ -101,41 +111,43 @@ client.after(2000, function() {
           // Check if the current distance state is !tooFar
           client.stop()
           console.log('forwards' + vd.dist[0])
-          state.distance === DISTANCE.TOO_FAR
+          state.distance = DISTANCE.TOO_FAR
           client.front(0.2);
 
         } else if (vd.dist[0] < 100 && state.distance !== DISTANCE.TOO_CLOSE)  {
           //  check if the distance state is !tooClose
           client.stop()
           console.log('back')
-          state.distance === DISTANCE.TOO_CLOSE
+          state.distance = DISTANCE.TOO_CLOSE
           client.back(0.2);
-        } else if (state.distance !== 'perfect') {
+        } else if (state.distance !== DISTANCE.PERFECT) {
           // check if the distance state is !perfect
           client.stop();
-          state.distance = 'perfect'
+          state.distance = DISTANCE.PERFECT
           console.log('perfect distance so, do nothing')
         } 
         else {
           // if none of the above, then set to perfect
-          state.distance === DISTANCE.PERFECT
+          state.distance = DISTANCE.PERFECT
           client.stop()
         }
 
         if (vd.yc > 550) {
-          client.down(0.2);
+          client.down(SPEED.DOWN);
         } else if (vd.yc < 450) {
-          client.up(0.2);
+          client.up(SPEED.UP);
         } else {
           client.up(0);
+          client.down(0)
         }
 
         if (vd.xc > 600) {
-          client.right(0.2);
+          client.right(SPEED.RIGHT);
         } else if (vd.xc < 400) {
-          client.left(0.2);
+          client.left(SPEED.LEFT);
         } else {
-          client.left(0);
+          client.left(0)
+          client.right(0)
         }
         
       } else {
@@ -146,7 +158,7 @@ client.after(2000, function() {
           client.stop()
         }
         
-        client.clockwise(0.7);
+        client.clockwise(SPEED.ROTATE);
       }
     } catch (error) {
 
