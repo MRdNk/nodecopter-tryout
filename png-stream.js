@@ -65,16 +65,16 @@ client.after(1000, function () {
 	client.stop();
 });
 
-var distance = {
-		perfect: true
-	, tooFar: true
-	, tooClose: true
+var DISTANCE = {
+		PERFECT: 0
+	, TOO_FAR: 1
+	, TOO_CLOSE: 2
 }
 
 var found = false;
 var state = {
 		found: false 		// has the drone found the colours
-	,	distance: distance.perfect
+	,	distance: DISTANCE.PERFECT
 
 } //'searching'
 
@@ -97,18 +97,18 @@ client.after(2000, function() {
 				console.log('distance', vd.dist);
 
 				// state.distance
-				if (vd.dist[0] > 100 && state.distance !== distance.tooFar) {
+				if (vd.dist[0] > 100 && state.distance !== DISTANCE.TOO_FAR) {
 					// Check if the current distance state is !tooFar
 					client.stop()
 					console.log('forwards' + vd.dist[0])
-					state.distance === distance.tooFar
+					state.distance === DISTANCE.TOO_FAR
 					client.front(0.2);
 
-				} else if (vd.dist[0] < 100 && state.distance !== distance.tooClose)  {
+				} else if (vd.dist[0] < 100 && state.distance !== DISTANCE.TOO_CLOSE)  {
 					//  check if the distance state is !tooClose
 					client.stop()
 					console.log('back')
-					state.distance === distance.tooClose
+					state.distance === DISTANCE.TOO_CLOSE
 					client.back(0.2);
 				} else if (state.distance !== 'perfect') {
 					// check if the distance state is !perfect
@@ -118,7 +118,7 @@ client.after(2000, function() {
 				} 
 				else {
 					// if none of the above, then set to perfect
-					state.distance === distance.perfect
+					state.distance === DISTANCE.PERFECT
 					client.stop()
 				}
 
