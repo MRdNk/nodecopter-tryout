@@ -126,11 +126,11 @@ client.after(2000, function() {
           state.distance = DISTANCE.PERFECT
           console.log('perfect distance so, do nothing')
         } 
-        else {
-          // if none of the above, then set to perfect
-          state.distance = DISTANCE.PERFECT
-          client.stop()
-        }
+        // else {
+        //   // if none of the above, then set to perfect
+        //   state.distance = DISTANCE.PERFECT
+        //   client.stop()
+        // }
 
         if (vd.yc > 550) {
           client.down(SPEED.DOWN);
