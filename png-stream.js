@@ -112,14 +112,14 @@ client.after(2000, function() {
           client.stop()
           console.log('forwards' + vd.dist[0])
           state.distance = DISTANCE.TOO_FAR
-          client.front(0.2);
+          client.front(SPEED.FRONT)
 
         } else if (vd.dist[0] < 100 && state.distance !== DISTANCE.TOO_CLOSE)  {
           //  check if the distance state is !tooClose
           client.stop()
           console.log('back')
           state.distance = DISTANCE.TOO_CLOSE
-          client.back(0.2);
+          client.back(SPEED.BACK)
         } else if (state.distance !== DISTANCE.PERFECT) {
           // check if the distance state is !perfect
           client.stop();
