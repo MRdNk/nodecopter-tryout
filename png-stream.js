@@ -69,7 +69,7 @@ var DISTANCE = {
     PERFECT: 0
   , TOO_FAR: 1
   , TOO_CLOSE: 2
-	, KEEP: 100
+	, TO_KEEP: 100
 }
 
 var SPEED = {
@@ -108,14 +108,14 @@ client.after(2000, function() {
         console.log('distance', vd.dist);
 
         // state.distance
-        if (vd.dist[0] > DISTANCE.KEEP && state.distance !== DISTANCE.TOO_FAR) {
+        if (vd.dist[0] > DISTANCE.TO_KEEP && state.distance !== DISTANCE.TOO_FAR) {
           // Check if the current distance state is !tooFar
           client.stop()
           console.log('forwards' + vd.dist[0])
           state.distance = DISTANCE.TOO_FAR
           client.front(SPEED.FRONT)
 
-        } else if (vd.dist[0] < DISTANCE.KEEP && state.distance !== DISTANCE.TOO_CLOSE)  {
+        } else if (vd.dist[0] < DISTANCE.TO_KEEP && state.distance !== DISTANCE.TOO_CLOSE)  {
           //  check if the distance state is !tooClose
           client.stop()
           console.log('back')
