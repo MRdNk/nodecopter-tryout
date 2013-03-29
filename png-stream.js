@@ -69,7 +69,7 @@ var DISTANCE = {
     PERFECT: 0
   , TOO_FAR: 1
   , TOO_CLOSE: 2
-	, TO_KEEP: 100
+  , TO_KEEP: 100
 }
 
 var SPEED = {
